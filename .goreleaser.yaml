@@ -1,3 +1,5 @@
+version: 2
+
 project_name: apimug
 
 before:
@@ -49,7 +51,7 @@ brews:
       owner: doganarif
       name: homebrew-apimug
       token: "{{ .Env.GITHUB_TOKEN }}"
-    folder: Formula
+    directory: Formula
     homepage: https://github.com/doganarif/apimug
     description: Terminal-based API client for OpenAPI/Swagger specifications
     license: MIT
