@@ -1,0 +1,333 @@
+swagger: "2.0"
+info:
+  title: Petstore API (Swagger 2.0)
+  description: A simple petstore API using Swagger 2.0 specification
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@petstore.com
+
+host: api.petstore.com
+basePath: /v1
+schemes:
+  - https
+  - http
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: X-API-Key
+    in: header
+  basic_auth:
+    type: basic
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.petstore.com/oauth/authorize
+    scopes:
+      write:pets: Modify pets in your account
+      read:pets: Read your pets
+
+tags:
+  - name: pets
+    description: Pet operations
+  - name: users
+    description: User operations
+
+paths:
+  /pets:
+    get:
+      tags:
+        - pets
+      summary: List all pets
+      description: Returns a list of all pets with optional filtering
+      operationId: listPets
+      produces:
+        - application/json
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of pets to return
+          type: integer
+          format: int32
+          default: 20
+          maximum: 100
+        - name: status
+          in: query
+          description: Filter by pet status
+          type: string
+          enum:
+            - available
+            - pending
+            - sold
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Pet"
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+
+    post:
+      tags:
+        - pets
+      summary: Add a new pet
+      description: Creates a new pet in the store
+      operationId: createPet
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Pet object to add
+          required: true
+          schema:
+            $ref: "#/definitions/NewPet"
+      responses:
+        "201":
+          description: Pet created successfully
+          schema:
+            $ref: "#/definitions/Pet"
+        "400":
+          description: Invalid input
+      security:
+        - oauth2:
+            - write:pets
+
+  /pets/{petId}:
+    get:
+      tags:
+        - pets
+      summary: Get pet by ID
+      description: Returns a single pet
+      operationId: getPetById
+      produces:
+        - application/json
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Pet"
+        "404":
+          description: Pet not found
+      security:
+        - api_key: []
+
+    put:
+      tags:
+        - pets
+      summary: Update a pet
+      description: Updates an existing pet's information
+      operationId: updatePet
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          type: integer
+          format: int64
+        - name: body
+          in: body
+          description: Updated pet object
+          required: true
+          schema:
+            $ref: "#/definitions/NewPet"
+      responses:
+        "200":
+          description: Pet updated successfully
+          schema:
+            $ref: "#/definitions/Pet"
+        "404":
+          description: Pet not found
+      security:
+        - oauth2:
+            - write:pets
+
+    delete:
+      tags:
+        - pets
+      summary: Delete a pet
+      description: Removes a pet from the store
+      operationId: deletePet
+      produces:
+        - application/json
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: Pet deleted successfully
+        "404":
+          description: Pet not found
+      security:
+        - oauth2:
+            - write:pets
+
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create user
+      description: Creates a new user account
+      operationId: createUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: User object
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: User created successfully
+        "400":
+          description: Invalid input
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: User login
+      description: Authenticates a user and returns a token
+      operationId: loginUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Login credentials
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+                format: password
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              expiresAt:
+                type: string
+                format: date-time
+        "401":
+          description: Invalid credentials
+
+definitions:
+  Pet:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: Fluffy
+      category:
+        type: string
+        example: cat
+      status:
+        type: string
+        enum:
+          - available
+          - pending
+          - sold
+        example: available
+      photoUrls:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+
+  NewPet:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        example: Fluffy
+      category:
+        type: string
+        example: cat
+      status:
+        type: string
+        enum:
+          - available
+          - pending
+          - sold
+        default: available
+      photoUrls:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+
+  User:
+    type: object
+    required:
+      - username
+      - email
+    properties:
+      id:
+        type: integer
+        format: int64
+      username:
+        type: string
+        example: john_doe
+      email:
+        type: string
+        format: email
+        example: john@example.com
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
