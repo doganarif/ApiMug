@@ -2,6 +2,10 @@
 
 A terminal-based API client for OpenAPI/Swagger specifications with an interactive TUI interface.
 
+
+<img width="2056" height="1110" alt="image" src="https://github.com/user-attachments/assets/b80bdfe6-e0ff-4b42-a785-5656a7b23775" />
+
+
 ## Features
 
 - Browse and explore OpenAPI 3.0 and Swagger 2.0 specifications
