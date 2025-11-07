@@ -15,11 +15,20 @@ A terminal-based API client for OpenAPI/Swagger specifications with an interacti
 
 ## Installation
 
+### Homebrew
+
+```bash
+brew tap doganarif/apimug
+brew install apimug
+```
+
+### Go Install
+
 ```bash
 go install github.com/doganarif/apimug/cmd/apimug@latest
 ```
 
-Or build from source:
+### From Source
 
 ```bash
 git clone https://github.com/doganarif/apimug.git
